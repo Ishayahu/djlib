@@ -117,3 +117,39 @@ def what_to_people_friendly(a):
         count=a.split(';').count(word)
         c = c + word + ' - ' + str(count) + u' шт; '
     return c
+
+def strings_to_lower_with_first_upper(strings, field_number=0,
+                                      separator=';'):
+    """
+    Получает список строк. Возвращает те же строки, где если каждую
+    строку разбить по separator то поле с номером field_number будет
+    переводится в нижний регистр
+    Из
+    АБВГД ЕЖЗИК ЛМ
+    будет
+    Абвгд Ежзик лм
+    :param strings: список строк
+    :param field_number: номер поля, по умолчанию - вся строка
+    :param separator: разделитель полей, по умолчанию ';'
+    :return: список строк
+    """
+    new_strings = []
+    for string in strings:
+        # если вся строка
+        if not field_number:
+            raise NotImplementedError(u"Пока не надо - не делал")
+        else:
+            str_tmp = string.split(separator)[field_number].split(' ')
+            str_new = ''
+            for a in str_tmp[:-1]:
+                try:
+                    str_new = str_new + a[0].upper()+a[1:].lower() + ' '
+                except:
+                    print('TO_LOW_ERR: '+string)
+                    continue
+            str_new += str_tmp[-1].lower()
+            new_list = string.split(separator)[:field_number]
+            new_list.append(str_new)
+            new_list += string.split(separator)[field_number+1:]
+            new_strings.append(separator.join(new_list))
+    return new_strings
