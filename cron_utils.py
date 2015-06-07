@@ -1,6 +1,9 @@
 # -*- coding:utf-8 -*-
 # coding=<utf8>
 
+__version__ = '0.0.1'
+import datetime
+
 def decronize(fstring):
     minute,hour,day,month,wday = fstring.split('\t')
     def get_interval(fstr,min,max):
