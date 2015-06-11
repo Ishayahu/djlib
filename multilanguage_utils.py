@@ -1,6 +1,12 @@
-﻿from django.contrib.auth.decorators import login_required
+﻿__version__ = '0.0.1а'
+
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+
+from todoes.models import Person
+from djlib.error_utils import FioError
+from user_settings.settings import admins
 
 languages={'ru':'RUS/',
             }
@@ -45,6 +51,19 @@ def multilanguage(fn):
         if not decorate_or_not:
             return result
         template,forms_dict,dict,request,app=result
+        # добавляем пользователя, чтобы не надо было это делать в
+        # каждой функции
+        # TODO: вынести это в отдельный декоратор или сделать
+        # независимым от модели
+        user = request.user.username
+        try:
+            fio = Person.objects.get(login=user)
+        except Person.DoesNotExist:
+            fio = FioError()
+
+
+
+
         # print "after calling for "+str(args[0].path)+" in multilanguage: "+str(request.session['my_error'])
         # dict.update(request.session.get('to_dict'))
         # request.session.get('to_dict')=''
@@ -74,6 +93,15 @@ def multilanguage(fn):
                 else:
                     forms[form]=(a(forms_dict[form]))
             dict.update(forms)
+
+        # TODO: см выше
+        if dict.get('worker',None) is None:
+            dict['worker']=fio
+        if user in admins:
+            # print "adding error to dict"
+            dict['admin']=True
+        # до сих
+
         # raise ImportError
         # print l_template
         # print dict
