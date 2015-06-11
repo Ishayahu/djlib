@@ -15,6 +15,7 @@ def acl(request,task_type,task_id):
         return True
     else:
         return False
+#TODO: убрать. Это должно быть по умолчанию. Перенсё в multilanguage
 def for_admins(fn):
     """
      Декоратор для "видов", которые содержат инфу, которую должны видеть только админы. Добавляет в словарь dict['admin']=True
