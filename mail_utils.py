@@ -6,7 +6,7 @@ from django.core.mail import EmailMultiAlternatives
 from djlib.text_utils import htmlize
 from django.conf import settings
 
-def send_email_alternative(subject,message,to,fio):
+def send_email_alternative(subject,message,to):
     if settings.EMAIL_HOST_USER:
         message_html = htmlize(message)
         good_mails=[mail for mail in to if mail!='']
