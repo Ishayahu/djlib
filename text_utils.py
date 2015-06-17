@@ -79,15 +79,22 @@ def htmlize(text):
     # ключь - шаблон для поиска
     # занчения - (шаблон для поиска для замены в исходной строке,
     #             шаблон для замены)
-    escaped_tuple=((r'\\(*)',(u'\\*',u'???asterics???')),
-                    (r'\\(\\)',(u'\\\\',u'???backslash???')),
-                    (r'({)',(u'{',u'???curle_open???')),
-                    (r'(})',(u'}',u'???curle_close???')),
+    # escaped_tuple=((r'\\(*)',(u'\\*',u'???asterics???')),
+    #                 (r'\\(\\)',(u'\\\\',u'???backslash???')),
+    #                 (r'({)',(u'{',u'???curle_open???')),
+    #                 (r'(})',(u'}',u'???curle_close???')),
+    #                 )
+    escaped_tuple=((u'\\*',u'???asterics???'),
+                    (u'\\\\',u'???backslash???'),
+                    (u'{',u'???curle_open???'),
+                    (u'}',u'???curle_close???'),
+                    # (u'\n\n',u'???absaz???'),
                     )
     unescaped_tuple=((u'???asterics???',u'*'),
                     (u'???backslash???',u'\\'),
                     (u'???curle_open???',u'{'),
                     (u'???curle_close???',u'}'),
+                    # (u'???absaz???',u'<p>'),
                     )
 
     replace_tuple=((r'\*\*([^*]*)\*\*',(u'**{0}**',
@@ -98,7 +105,8 @@ def htmlize(text):
     # сперва мы заменим на временные последовательности все
     # экранированные символы, чтобы не мешались
     # \\([*\\])
-    for template,replacement in escaped_tuple:
+    for replacement in escaped_tuple:
+    # for template,replacement in escaped_tuple:
         # strings = re.findall(r'\\([*\\])',text)
         # for string in strings:
         text = text.replace(replacement[0],
@@ -109,6 +117,8 @@ def htmlize(text):
     text = text.replace(u'<',u'&lt')
     text = text.replace(u'>',u'&gt')
     text = text.replace(u'\r\n',u'\n')
+    text = text.replace(u'\n\n',u'<p>')
+
     for template,replacement in replace_tuple:
         strings = re.findall(template,text)
 

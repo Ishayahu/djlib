@@ -36,7 +36,17 @@ class MyTestCase(unittest.TestCase):
             ||r1||r2||r1||r2||"""
 
         self.assertEqual(htmlize(a),
-                         u'<table border=1><tr><td>h1</td><td>h2</td></tr><tr><td>r1</td><td>r2</td></tr></table>neflsflk<table border=1><tr><td>h1</td><td>h2</td><td>h1</td><td>h2</td></tr><tr><td>r1</td><td>r2</td><td>r1</td><td>r2</td></tr></table>')
+                         u'<table border=1><tr><td>h1</td><td>h2</td></tr><tr><td>r1</td><td>r2</td><td><p>            neflsflk<p>            </td><td>h1</td><td>h2</td><td>h1</td><td>h2</td></tr><tr><td>r1</td><td>r2</td><td>r1</td><td>r2</td></tr></table>')
+    def test_abzatz(self):
+        a="""Absatz1
+
+        Abzats2
+
+        Abz3
+        Abz3"""
+
+        self.assertEqual(htmlize(a),
+                         u'Absatz1<p>        Abzats2<p>        Abz3\n        Abz3')
     def test_escape(self):
         a=r"""\*bold\* \\backslash\\ {yesterday}"""
 
