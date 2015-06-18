@@ -74,16 +74,31 @@ def htmlize(text):
             html += row_html
         html += u"</table>"
         return html
+    def make_html_lists(text):
+        """
+        '\n        + Undo al\n\n        - 12345 -90\n   - 8\n\n'
+        превращает в таблицу на html
+        """
+        items = re.findall(r'(\s*[+-] .*)',text,re.M)
+        items = [x.strip() for x in items]
+        levels = ['',]
+        tags = {
+            '+':(u'<ol>',u'</ol>'),
+            '-':(u'<ul>',u'</ul>'),
+        }
+        html = u""
+        for item in items:
+            if item[0]!=levels[-1]:
+                # если начинается новый уровень
+                levels.append(item[0])
+                html += tags[item[0]][0]
+            # в любом случае
+            item = item[2:].strip()
+            html += u'<li>{0}</li>'.format(item)
+        while levels[-1]:
+            html += tags[levels.pop(-1)][-1]
+        return html
 
-    # список для замены, списки: (ключ, (значения))
-    # ключь - шаблон для поиска
-    # занчения - (шаблон для поиска для замены в исходной строке,
-    #             шаблон для замены)
-    # escaped_tuple=((r'\\(*)',(u'\\*',u'???asterics???')),
-    #                 (r'\\(\\)',(u'\\\\',u'???backslash???')),
-    #                 (r'({)',(u'{',u'???curle_open???')),
-    #                 (r'(})',(u'}',u'???curle_close???')),
-    #                 )
     escaped_tuple=((u'\\*',u'???asterics???'),
                     (u'\\\\',u'???backslash???'),
                     (u'{',u'???curle_open???'),
@@ -97,6 +112,10 @@ def htmlize(text):
                     # (u'???absaz???',u'<p>'),
                     )
 
+    # список для замены, списки: (ключ, (значения))
+    # ключь - шаблон для поиска
+    # занчения - (шаблон для поиска для замены в исходной строке,
+    #             шаблон для замены)
     replace_tuple=((r'\*\*([^*]*)\*\*',(u'**{0}**',
                                              u'<i>{0}</i>')),
                     (r'\*([^*]*)\*',(u'*{0}*',u'<b>{0}</b>')),
@@ -156,6 +175,24 @@ def htmlize(text):
         text = text.replace(table,u'{'+str(index)+u'}')
         html_tables.append(make_html_table(table))
     text = text.format(*html_tables)
+
+            # Обработка списокв
+    # поступать будем как со ссылками: сперва выделяем блок с
+    # перечислением, затем делаем из него html, а затем заменяем в
+    # исходном
+            # ^\s*([+-]) (.*)$
+    template = "((?:(?:\s*[+-] [^<]*)(?:\n|\n\r|<p>))+)"
+    # template = "((?:(?:\s*[+-] .*)(?:\n|\n\r))+)"
+    lists = re.findall(template,text,re.MULTILINE)
+    html_lists = []
+    for index, list_ in enumerate(lists):
+        # делаем из текста строку для форматирования
+        text = text.replace(list_,u'{'+str(index)+u'}')
+        # форматируем
+        html_lists.append(make_html_lists(list_))
+    text = text.format(*html_lists)
+
+
             # ВСТАВКА ЭКРАНИРОВАННЫХ СИМВОЛОВ
     for escaped, unescaped in unescaped_tuple:
         text = text.replace(escaped,unescaped)
