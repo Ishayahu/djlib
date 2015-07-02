@@ -7,6 +7,9 @@ import datetime
 def decronize(fstring):
     minute,hour,day,month,wday = fstring.split('\t')
     def get_interval(fstr,min,max):
+        # не указанное значение то же что и любое
+        if fstr=='':
+            fstr='*'
         # max - предел интервала:
         # минута
         # * или 0-59
