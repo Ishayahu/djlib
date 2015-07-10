@@ -17,7 +17,7 @@ def add_error(message,request):
     if 'my_error' not in request.session:
         # print "my_error not in session"
         request.session['my_error']=[]
-    if type(request.session['my_error'])!=list:
+    if type(request.session['my_error']) != list:
         if request.session['my_error']:
             # print "addin new error to old one"
             tmp=request.session['my_error']
@@ -25,7 +25,9 @@ def add_error(message,request):
             request.session['my_error'].append(tmp)
         else:
             request.session['my_error']=[]
+    # print message.encode('utf-8')
     request.session['my_error'].append(message)
+    # print request.session['my_error']
     request.session.modified = True
     # print "error in "+request.path+" appended: "+str(request.session['my_error'])
 def shows_errors(fn):
