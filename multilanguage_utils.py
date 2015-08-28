@@ -50,7 +50,7 @@ def multilanguage(fn):
         decorate_or_not, result = fn(*args,**kwargs)
         if not decorate_or_not:
             return result
-        template,forms_dict,dict,request,app=result
+        template,forms_dict,context,request,app=result
         # добавляем пользователя, чтобы не надо было это делать в
         # каждой функции
         # TODO: вынести это в отдельный декоратор или сделать
@@ -88,23 +88,24 @@ def multilanguage(fn):
                 # forms[form]=(a(**forms_dict[form]))
                 # print form, forms_dict[form]
                 #form_template_name - имя формы в шаблоне
-                if 'form_template_name' in dict:
-                    forms[dict['form_template_name']]=(a(forms_dict[form]))
+                if 'form_template_name' in context:
+                    forms[context['form_template_name']]=(a(forms_dict[form]))
                 else:
                     forms[form]=(a(forms_dict[form]))
-            dict.update(forms)
+            context.update(forms)
 
         # TODO: см выше
-        if dict.get('worker',None) is None:
-            dict['worker']=fio
+        if context.get('worker',None) is None:
+            context['worker']=fio
         if user in admins:
             # print "adding error to dict"
-            dict['admin']=True
+            context['admin']=True
         # до сих
 
         # raise ImportError
         # print l_template
         # print dict
         # print "in multilanguage for "+str(args[0].path)+" before return dict="+str(dict)
-        return render_to_response(l_template, dict,RequestContext(request))
+        # return render_to_response(l_template, context,RequestContext(request))
+        return render_to_response(l_template, context)#,RequestContext(request))
     return wrapped

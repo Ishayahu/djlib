@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 # coding=<utf8>
 
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 import datetime
 
 def decronize(fstring):
@@ -65,13 +65,16 @@ def crontab_to_russian(fstr):
     return result
     
 def generate_next_reminder(ranges, stop_date):
+    # print ranges
     minute = datetime.datetime.now().minute
     hour = datetime.datetime.now().hour
     day = datetime.datetime.now().day
     month = datetime.datetime.now().month
-    wday = datetime.datetime.now().weekday()
+    # because in cron Sunday is 0, and in Python Monday is 0
+    wday = datetime.datetime.now().weekday()+1
     year = datetime.datetime.now().year
     crit_dict = {'month':month,'day':day,'hour':hour,'minute':minute,'wday':wday}
+    print crit_dict
     #TODO: надо сделать учёт високосного года
     if month == 2: # если февраль - дней меньше, пока считаем 28
         crit_max = {'month':13,'day':29,'hour':24,'minute':60,'wday':7}
@@ -99,13 +102,16 @@ def generate_next_reminder(ranges, stop_date):
                     crit_dict[criteria] = crit_min[criteria]
                     to_next = True
         else:
+            # print crit_dict,to_next
             if to_next:
                 #print 'here'
                 crit_dict['day'] += 1
                 crit_dict['wday'] += 1
-                if crit_dict['wday'] == 7:
-                    crit_dict['wday'] = 1
+                if crit_dict['wday'] >= 7:
+                    crit_dict['wday'] %= 7
+                    # crit_dict['wday'] = 1
                 to_next = False
+            # print crit_dict,to_next
             while True: # crit_dict['day'] <= crit_max['day'] and crit_dict['wday'] <= crit_max['wday']:
                 #print crit_dict
                 if crit_dict['day'] in ranges['day'] or  crit_dict['wday'] in ranges['wday']:
@@ -132,3 +138,5 @@ def generate_next_reminder(ranges, stop_date):
     if stop_date and next_reminder > stop_date:
         return False
     return next_reminder
+
+# print generate_next_reminder(decronize('00\t09\t*\t*\t0'),None)

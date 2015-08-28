@@ -14,10 +14,10 @@ from todoes.models import  Person
 
 def get_info(request):
     lang=select_language(request)
-    user = request.user.username
+    login = request.user.username
     try:
-        fio = Person.objects.get(login=user)
+        user = Person.objects.get(login=login)
     except Person.DoesNotExist:
-        fio = FioError()
+        user = FioError()
     method = request.method
-    return lang,user,fio,method
+    return lang,login,user,method
