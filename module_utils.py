@@ -4,7 +4,7 @@ __version__ = '0.0.1а'
 
 import re
 from user_settings.functions import get_full_section
-
+from ConfigParser import NoSectionError
 languages = {'ru': 'RUS/',
              }
 
@@ -20,14 +20,18 @@ class Link:
         # print params
         self.onclick = 'var link=\\"'+link+'\\";'
         script_end = ''
-        for idx,param in enumerate(params):
+        for idx, param in enumerate(params):
             # получаем параметры из урла, запрашиваем значения у
             # пользователя и заменяем их в урле
             question = param[1:-1]
-            self.onclick += ("var a"+str(idx)+'=prompt(\\"'+question+':\\");')
-            script_end += ('link=link.replace(\\"'+param+'\\",a'+str(idx)+");")
+            self.onclick +=\
+                ("var a"+str(idx)+'=prompt(\\"'+question+':\\");')
+            script_end +=\
+                ('link=link.replace(\\"'+param+'\\",a'+str(idx)+");")
         self.onclick += script_end
-        self.onclick += ('document.getElementById(\\"'+str(self.id)+'\\").href = link;')
+        self.onclick +=\
+            ('document.getElementById(\\"'+str(self.id) +
+             '\\").href = link;')
 
 
 class Module:
@@ -107,8 +111,11 @@ def collect_modules():
     # если есть показываем статус из настроек. Данные для модуля
     # будем брать из файла todoes_module. Если в нём не правильные
     # данные - выдаём про него отдельное сообщение
-    connected_modules = [x.option for x in get_full_section('modules')
-                         if x.value]
+    try:
+        connected_modules = [x.option for x in get_full_section(
+            'modules') if x.value]
+    except NoSectionError:
+        connected_modules = []
     for module in modules:
         if module.name in connected_modules:
             module.active = True

@@ -3,6 +3,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.core.context_processors import csrf
 
 from todoes.models import Person
 from djlib.error_utils import FioError
@@ -101,7 +102,8 @@ def multilanguage(fn):
             # print "adding error to dict"
             context['admin']=True
         # до сих
-
+        # addming csrf
+        context.update(csrf(request))
         # raise ImportError
         # print l_template
         # print dict
