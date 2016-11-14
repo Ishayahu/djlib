@@ -74,7 +74,7 @@ def generate_next_reminder(ranges, stop_date):
     wday = datetime.datetime.now().weekday()+1
     year = datetime.datetime.now().year
     crit_dict = {'month':month,'day':day,'hour':hour,'minute':minute,'wday':wday}
-    print crit_dict
+    print (crit_dict)
     #TODO: надо сделать учёт високосного года
     if month == 2: # если февраль - дней меньше, пока считаем 28
         crit_max = {'month':13,'day':29,'hour':24,'minute':60,'wday':7}
@@ -133,6 +133,11 @@ def generate_next_reminder(ranges, stop_date):
     except ValueError:
         crit_dict['month']+=1
         crit_dict['day']=crit_dict['day']-30
+        if crit_dict['day']==0:
+            crit_dict['day'] = 1
+            #TODO: залатано на скорую руку. Вроде при установке даты выполнения "проверить данные колеля" в конце января выставилось начало января
+        next_reminder = datetime.datetime(year,crit_dict['month'],
+                                   crit_dict['day'],crit_dict['hour'],crit_dict['minute'])
     # return crit_dict['minute'],crit_dict['hour'],crit_dict['day'],
     # crit_dict['month'],crit_dict['wday']
     if stop_date and next_reminder > stop_date:
